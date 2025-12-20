@@ -33,6 +33,43 @@ print("\nAge by gender:")
 print(f"Men: {df[df['sex'] == 'M']['age'].mean():.1f} ± {df[df['sex'] == 'M']['age'].std():.1f} years")
 print(f"Women: {df[df['sex'] == 'F']['age'].mean():.1f} ± {df[df['sex'] == 'F']['age'].std():.1f} years")
 
+plt.figure(figsize=(10, 6))
+n, bins, patches = plt.hist (df['age'],color = 'red',bins = 8,ec = 'black')
+plt.title('Age Distribution ', fontsize=14)
+plt.xlabel('Age', fontsize=12)
+plt.ylabel('Count', fontsize=12)
+
+for count, patch in zip(n, patches):
+    height = count
+    x = patch.get_x() + patch.get_width() / 2
+    y = height
+
+    if height > 0:
+        plt.text(x, y + 0.5, f'{int(height)}',
+                 ha='center', va='bottom', fontsize=10, fontweight='bold')
+
+plt.tight_layout()
+plt.savefig('results/age_distrib.png')
+plt.show()
+
+plt.figure(figsize=(10, 6))
+sex_counts = df['sex'].value_counts()
+bars = plt.bar(sex_counts.index,
+               sex_counts.values,
+               color=['blue', 'pink'],
+               alpha=0.7)
+plt.title('Sex Distribution ', fontsize=14)
+plt.xlabel('Sex', fontsize=12)
+plt.ylabel('Count', fontsize=12)
+
+for bar in bars:
+    height = bar.get_height()
+    plt.text(bar.get_x() + bar.get_width()/2, height + 0.5,
+             f'{int(height)}', ha='center', va='bottom',
+             fontsize=11, fontweight='bold')
+plt.tight_layout()
+plt.savefig('results/sex_distrib.png')
+plt.show()
 # 1. Variance
 variance = df['age'].var()
 print(f"Age variance: {variance:.2f}")
