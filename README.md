@@ -11,11 +11,11 @@ Core Concept: "If it doesn't look like a healthy brain, flag it — then figure 
 
 ## 📂 Data & Problem Setting
 
-- [Dataset: open **Kaggle** dataset “EEG Psychiatric Disorders Dataset”] (https://www.kaggle.com/datasets/shashwatwork/eeg-psychiatric-disorders-dataset)
-- EEG features:
+[Dataset: open **Kaggle** dataset “EEG Psychiatric Disorders Dataset”] (https://www.kaggle.com/datasets/shashwatwork/eeg-psychiatric-disorders-dataset)
+EEG features:
   - Absolute power (**AB**) in six bands: delta, theta, alpha, beta, high beta, gamma  
   - 114 numerical features per subject (AB × electrodes / regions)  
-- Task:
+Task:
   - Binary: **healthy vs pathology** (anomaly detection, training only on healthy)  
   - Descriptive: comparison of **relative power** patterns across diagnoses  
 
@@ -25,18 +25,18 @@ Core Concept: "If it doesn't look like a healthy brain, flag it — then figure 
 
 ### Unsupervised Anomaly Detection
 
-- **Scaling & Norm**
+ **Scaling & Norm**
   - Standardization parameters (mean, std) are computed on healthy participants 18–30  
   - The same transformation is applied to all subjects (healthy + patients)  
   - Healthy group defines an empirical EEG **norm**
 
-- **Autoencoder (MLP)**
+  **Autoencoder (MLP)**
   - Symmetric feedforward network trained to reconstruct standardized EEG features of healthy controls  
   - Reconstruction error (MSE) used as an **anomaly score**  
   - Threshold: 90‑th percentile of errors in healthy group → binary label  
-    - `predicted_healthy` / `predicted_pathology`
+    `predicted_healthy` / `predicted_pathology`
 
-- **Isolation Forest**
+ **Isolation Forest**
   - Tree‑based anomaly detector trained on the same healthy subset  
   - Used as a baseline model for comparison under strong class imbalance  
 
@@ -45,32 +45,30 @@ Core Concept: "If it doesn't look like a healthy brain, flag it — then figure 
 - Empirical norm is computed for each spectral feature on healthy 18–30 group  
 - For each subject and each band, **relative deviation** is computed as percent difference from norm  
 - Diagnostic groups (e.g. depression, schizophrenia, alcohol use disorder, OCD, bipolar disorder, etc.) are compared by:
-  - Mean relative power deviations in delta–gamma bands  
-  - Heatmaps showing patterns of increases/decreases vs healthy norm  
+   Mean relative power deviations in delta–gamma bands  
+   Heatmaps showing patterns of increases/decreases vs healthy norm  
 
-This allows exploring candidate EEG **biomarkers** and shared vs distinct spectral patterns across disorders.
+>This allows exploring candidate EEG biomarkers and shared vs distinct spectral patterns across disorders.
 
 ## 🛠 Tech Stack
 
-- **Language:** Python  
-- **Core libraries:**  
+**Language:** Python  
+**Core libraries:**  
   - Data: `pandas`, `numpy`  
-  - ML: `scikit-learn` (MLPRegressor autoencoder, IsolationForest, metrics)  
+  - ML: `scikit-learn` 
   - Visualisation: `matplotlib` / `seaborn` (heatmaps, plots)  
 
 ## ⚡ Quick Start
 
-# 1. Clone repository
+1. Clone repository
 git clone https://github.com/nekihlep/EEG-anomaly-detection.git
-
-# 2. Create environment (optional, recommended)
+2. Create environment (optional, recommended)
 python -m venv venv
 source venv/bin/activate   # Windows: venv\Scripts\activate
-
-# 3. Install dependencies
+3. Install dependencies
 pip install -r requirements.txt
-
-# 4. Run main file autoenc.py
-It's more convenient to do it in PyCharm
+4. Run main file autoenc.py
+   
+>It's more convenient to do it in PyCharm
 
 ## Future Directions
