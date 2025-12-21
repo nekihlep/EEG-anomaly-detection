@@ -245,8 +245,8 @@ for bar, val in zip(bars, values):
              f'{val:.1%}', ha='center', fontsize=11)
 
 plt.tight_layout()
+plt.savefig('results/Autoenc_metrics.png')
 plt.show()
-plt.savefig('results/Autoencoder_metrics.png')
 plt.close()
 
 
