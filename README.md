@@ -71,4 +71,9 @@ pip install -r requirements.txt
    
 >It's more convenient to do it in PyCharm
 
-## Future Directions
+## 🚀 Future Directions
+
+- **Data expansion**: COH features, raw EEG, new datasets
+- **Clinical application**: Therapy monitoring (pre/post-treatment spectral dynamics)
+- **Model improvements**: Larger samples, deep learning, multi-class classification
+
