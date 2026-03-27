@@ -5,7 +5,6 @@ steps = [
     "03_isolation_forest.py",
     "04_autoencoder_anomaly.py",
     "05_autoencoder_features.py",
-    "06_feature_engineering.py",
     "07_logistic_l1.py",
     "08_random_forest.py",
     "09_baseline_comparison.py",

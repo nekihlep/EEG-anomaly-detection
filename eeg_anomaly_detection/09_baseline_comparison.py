@@ -6,11 +6,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 warnings.filterwarnings('ignore')
-X_test = np.load('processed_data/X_test_scaled.npy')
-y_test = np.load('processed_data/y_test.npy')
+X_train = np.load('processed_data/X_train_scaled.npy')
+y_train = np.load('processed_data/y_train.npy')
+X_test  = np.load('processed_data/X_test_scaled.npy')
+y_test  = np.load('processed_data/y_test.npy')
 
 dummy = DummyClassifier(strategy='most_frequent')
-dummy.fit(X_test, y_test)
+dummy.fit(X_train, y_train)
+y_pred = dummy.predict(X_test)
 
 y_pred_dummy = dummy.predict(X_test)
 

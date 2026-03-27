@@ -20,14 +20,11 @@ age_bins = [18, 30, 50, 72]
 age_labels = ['18-30', '31-50', '51+']
 df['age_group'] = pd.cut(df['age'], bins=age_bins, labels=age_labels, include_lowest=True)
 
-# ✅ ИСПРАВЛЕНИЕ: вычисляем группы
 age_groups = age_labels
 group_data = df.groupby('age_group')['is_healthy'].agg(['count', 'sum']).round(0).astype(int)
 healthy_counts = group_data['sum'].values
 sick_counts = group_data['count'] - group_data['sum']
 print("Возрастные группы:", dict(zip(age_groups, zip(healthy_counts, sick_counts))))
-
-# 4 графика в одном figsize
 fig, axes = plt.subplots(2, 2, figsize=(14, 10))
 
 # 1. Гистограмма возраста
@@ -35,7 +32,7 @@ axes[0,0].hist(df['age'], bins=15, color='steelblue', alpha=0.7, edgecolor='blac
 axes[0,0].set_title('Распределение возраста')
 axes[0,0].grid(True, alpha=0.3)
 
-# 2. Пол (упрощённо)
+# 2. Пол
 sex_counts = df['sex'].value_counts()
 axes[0,1].pie(sex_counts.values, labels=sex_counts.index, autopct='%1.1f%%', colors=['#3498db', '#e74c3c'])
 axes[0,1].set_title('Доля по полу')
