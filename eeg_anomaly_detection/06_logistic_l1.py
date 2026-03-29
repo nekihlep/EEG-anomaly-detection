@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from sklearn.neural_network import MLPRegressor
 from sklearn.linear_model import RidgeCV, LassoCV
 from sklearn.linear_model import Ridge, Lasso
+import seaborn as sns
 from sklearn.linear_model import LogisticRegressionCV
 from sklearn.metrics import (precision_score, recall_score, f1_score,
                            classification_report, confusion_matrix)
@@ -10,7 +11,6 @@ import warnings
 warnings.filterwarnings('ignore', category=FutureWarning)
 warnings.filterwarnings('ignore', category=UserWarning)
 
-# 1. Загрузка
 X_train = np.load('processed_data/X_train_scaled.npy')
 X_test = np.load('processed_data/X_test_scaled.npy')
 y_train = np.load('processed_data/y_train.npy')
@@ -24,21 +24,20 @@ logreg_l1_cv = LogisticRegressionCV(
     scoring='recall_macro',
     max_iter=1000,
     random_state=42,
-    n_jobs=-1
+    n_jobs=-1,
+    verbose=1
 )
 
 logreg_l1_cv.fit(X_train, y_train)
 y_pred = logreg_l1_cv.predict(X_test)
 
-print("Лучший C:", logreg_l1_cv.C_[0])
-print("Активных признаков:", np.sum(logreg_l1_cv.coef_ != 0))
-print(classification_report(y_test, y_pred, target_names=['Больной','Здоровый']))
-
-# Важность (L1 занулила слабые)
+print("The best C:", logreg_l1_cv.C_[0])
+print("Active features:", np.sum(logreg_l1_cv.coef_ != 0))
+# L1
 plt.figure(figsize=(10,6))
 importance = np.abs(logreg_l1_cv.coef_[0])
 plt.bar(range(len(importance)), importance)
-plt.title(f'L1 Importance (активно: {np.sum(importance>0)}/32 признаков)')
+plt.title(f'L1 Importance (active: {np.sum(importance>0)}/32 features)')
 plt.xlabel('AE Feature Index')
 plt.savefig('results/figures/logreg_l1_importance.png', dpi=300)
 plt.show()
@@ -47,8 +46,8 @@ plt.show()
 plt.figure(figsize=(8,6))
 cm = confusion_matrix(y_test, y_pred)
 sns.heatmap(cm, annot=True, fmt='d', cmap='Reds',
-            xticklabels=['Больной','Здоровый'],
-            yticklabels=['Больной','Здоровый'])
+            xticklabels=['Patient', 'Healthy'],
+            yticklabels=['Patient', 'Healthy'])
 plt.title('Logistic L1 (F1-optimal)')
 plt.savefig('results/figures/logreg_l1_cm.png', dpi=300)
 plt.show()

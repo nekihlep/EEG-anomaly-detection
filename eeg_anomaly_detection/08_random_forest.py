@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pickle
 import os
+
 X_train_ab = np.load('processed_data/X_train_scaled.npy')
 X_test_ab = np.load('processed_data/X_test_scaled.npy')
 X_train_ae = np.load('processed_data/ae_features_train.npy')
@@ -14,13 +15,12 @@ X_test_ae  = np.load('processed_data/ae_features_test.npy')
 y_train = np.load('processed_data/y_train.npy')
 y_test = np.load('processed_data/y_test.npy')
 
-
 top20 = pd.read_csv('results/tables/top20_ab_features.csv')
 
 X_train_top20 = X_train_ab[:, top20.index.values[:20]]
 X_test_top20  = X_test_ab[:, top20.index.values[:20]]
 
-print(f"Размеры: AB(114): {X_train_ab.shape} | ТОП20: {X_train_top20.shape} | AE(32): {X_train_ae.shape}")
+print(f"Dataset sizes: AB(114): {X_train_ab.shape} | Top20: {X_train_top20.shape} | AE(32): {X_train_ae.shape}")
 
 rf_params = {
     'n_estimators': [100, 200],
@@ -42,6 +42,7 @@ rf_importance = pd.DataFrame({
     'feature': feature_names,
     'importance': importances_rf
 }).sort_values('importance', ascending=False)
+
 # Learning curves
 train_sizes, train_scores, val_scores = learning_curve(
     best_rf, X_train_top20, y_train, cv=5, scoring='f1_weighted',
@@ -50,38 +51,39 @@ train_sizes, train_scores, val_scores = learning_curve(
 
 plt.figure(figsize=(8,6))
 plt.plot(train_sizes, train_scores.mean(axis=1), 'o-', label='Train', linewidth=2)
-plt.plot(train_sizes, val_scores.mean(axis=1), 'o-', label='Val', linewidth=2)
-plt.title('Learning Curve RF ТОП-20 AB', fontsize=14, fontweight='bold')
-plt.xlabel('Размер выборки')
-plt.ylabel('F1-weighted')
+plt.plot(train_sizes, val_scores.mean(axis=1), 'o-', label='Validation', linewidth=2)
+plt.title('Learning Curve: RF Top-20 AB Features', fontsize=14, fontweight='bold')
+plt.xlabel('Training Set Size')
+plt.ylabel('F1-weighted Score')
 plt.legend()
 plt.grid(alpha=0.3)
 plt.tight_layout()
 plt.savefig('results/figures/08_learning_curve.png', dpi=300, bbox_inches='tight')
 plt.show()
+
 train_final = train_scores.mean(axis=1)[-1]
 val_final = val_scores.mean(axis=1)[-1]
 gap = train_final - val_final
 
-print("\n LEARNING CURVE — ЧИСЛА:")
-print(f"Train F1 (финал):  {train_final:.3f}")
-print(f"Val F1 (финал):    {val_final:.3f}")
-print(f"ЗАЗОР Train-Val:   {gap:.3f}")
-print(f"Стабилизация Val:  {val_final:.3f} при {train_sizes[-1]:.0f} примерах")
+print("\nLearning curve results:")
+print(f"Train F1 (final):     {train_final:.3f}")
+print(f"Validation F1 (final): {val_final:.3f}")
+print(f"Train-Val gap:         {gap:.3f}")
+print(f"Validation stable at:  {val_final:.3f} with {train_sizes[-1]:.0f} samples")
 
-# 3. Confusion Matrix
+# Confusion Matrix
 plt.figure(figsize=(8,6))
 cm = confusion_matrix(y_test, y_pred_top20)
 sns.heatmap(cm, annot=True, fmt='d', cmap='Reds',
-            xticklabels=['Больной','Здоровый'],
-            yticklabels=['Больной','Здоровый'],
-            cbar_kws={'label': 'Количество'})
-plt.title('RF ТОП-20: Матрица ошибок (Test)', fontsize=14, fontweight='bold')
-plt.ylabel('Истинные')
-plt.xlabel('Предсказанные')
+            xticklabels=['Patient','Healthy'],
+            yticklabels=['Patient','Healthy'],
+            cbar_kws={'label': 'Count'})
+plt.title('RF Top-20: Confusion Matrix (Test Set)', fontsize=14, fontweight='bold')
+plt.ylabel('True Labels')
+plt.xlabel('Predicted Labels')
 plt.tight_layout()
 plt.savefig('results/figures/08_confusion_matrix.png', dpi=300, bbox_inches='tight')
 plt.show()
-# 8. Сохранение
-pickle.dump(best_rf, open('processed_data/models/rf_top20.pkl', 'wb'))
+
+pickle.dump(best_rf, open('processed_data/models/random_forest_top20.pkl', 'wb'))
 rf_importance.to_csv('results/tables/rf_top20_importance.csv', index=False)

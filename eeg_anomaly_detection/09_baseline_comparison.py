@@ -1,6 +1,7 @@
 from sklearn.dummy import DummyClassifier
 from sklearn.metrics import classification_report, confusion_matrix
 import warnings
+import pickle
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -18,14 +19,14 @@ y_pred = dummy.predict(X_test)
 y_pred_dummy = dummy.predict(X_test)
 
 print("\nDummyClassifier (most_frequent):")
-print(classification_report(y_test, y_pred_dummy, target_names=['Больной','Здоровый']))
-# 6. Confusion Matrix
+#Confusion Matrix
 cm = confusion_matrix(y_test, y_pred_dummy)
 sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
-            xticklabels=['Больной', 'Здоровый'],
-            yticklabels=['Больной', 'Здоровый'])
+            xticklabels=['Patient','Healthy'],
+            yticklabels=['Patient','Healthy'])
 plt.title('DummyClassifier: Confusion Matrix')
 plt.ylabel('True')
 plt.xlabel('Predicted')
 plt.savefig('results/figures/dummyclass_cm.png', dpi=300)
 plt.show()
+pickle.dump(dummy, open('processed_data/models/dummy_model.pkl', 'wb'))

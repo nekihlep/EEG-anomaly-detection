@@ -105,7 +105,7 @@ def plot_relative_power_heatmap():
             'Legend:\n⚠️ change > 20%\n• change > 10%', fontsize=10,
             bbox=dict(boxstyle='round,pad=0.5', facecolor='lightyellow', alpha=0.8))
     plt.tight_layout()
-    plt.savefig('results/EEG_relative_power_heatmap.png', dpi=300, bbox_inches='tight')
+    plt.savefig('results/figures/EEG_relative_power_heatmap.png', dpi=300, bbox_inches='tight')
     plt.show()
 
 
