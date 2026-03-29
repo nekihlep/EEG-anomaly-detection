@@ -101,7 +101,7 @@ The project represents a modular research workflow that transforms raw EEG data 
 git clone https://github.com/nekihlep/EEG-anomaly-detection.git
 
 # Install dependencies
-pip install tensorflow-cpu scikit-learn pandas seaborn
+pip install -r requirements.txt
 
 # Run the complete pipeline
 python main.py
@@ -110,9 +110,13 @@ Note: It is recommended to run the project in PyCharm for correct handling of da
 
 ## 🚀 Future Directions
 
-- **Connectivity Analysis:**
+-**Connectivity Analysis:**
 Incorporating coherence (COH) features to model interactions between brain regions
+
+
 -**Graph Neural Networks (GNN):**
 Transition to graph-based models where EEG electrodes are nodes (relevant for EEML 2026)
+
+
 -**Real-time Screening:**
 Development of a lightweight classifier for real-time clinical deployment
