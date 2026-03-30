@@ -19,7 +19,7 @@
 
 ## 📂 Data & Problem Setting
 
-- **Dataset:** EEG Psychiatric Disorders Dataset (Kaggle)  
+- **Dataset:** [EEG Psychiatric Disorders Dataset](https://www.kaggle.com/datasets/shashwatwork/eeg-psychiatric-disorders-dataset) 
 - **Input:** 114 spectral features (absolute power across 6 frequency bands: Delta–Gamma)  
 - **Empirical Norm:** Constructed from healthy individuals aged 18–30 to detect pathological deviations  
 - **Classes:** Healthy Controls vs. Patients (Depression, Schizophrenia, AUD, OCD, etc.)  
