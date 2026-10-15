@@ -24,7 +24,8 @@ iso_forest = IsolationForest(
 iso_forest.fit(X_healthy_train)
 
 predictions_test = iso_forest.predict(X_test)
-y_pred_binary = (predictions_test == -1).astype(int)
+from evaluation import isolation_labels
+y_pred_binary = isolation_labels(predictions_test)
 # Confusion Matrix
 cm = confusion_matrix(y_test, y_pred_binary)
 sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
