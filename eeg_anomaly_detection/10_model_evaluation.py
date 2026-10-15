@@ -1,77 +1,44 @@
-import pandas as pd
-import matplotlib.pyplot as plt
-from sklearn.metrics import f1_score
+"""Audit trusted saved models. Legacy RF uses first 20 columns, not L1 top20.
+AE threshold metrics withheld because the original threshold used test labels.
+These are diagnostic results on the existing split, not final paper results.
+"""
+from pathlib import Path
 import pickle
 import numpy as np
-manual_f1 = {
-    'Random Forest': 0.93,
-    'LogReg L1': 0.89,
-    'AutoEncoder': 0.83,
-    'Dummy': 0.78,
-    'Isolation Forest': 0.34
-}
+import pandas as pd
+from sklearn.metrics import roc_auc_score
+from evaluation import classification_metrics, isolation_labels
+ROOT = Path(__file__).resolve().parent
+DATA = ROOT/'processed_data'
+OUT = ROOT/'results'/'audit'
 
-models = {
-    'LogReg_L1': pickle.load(open('processed_data/models/logreg_l1_cv.pkl', 'rb')),
-    'RF_Top20': pickle.load(open('processed_data/models/random_forest_top20.pkl', 'rb')),
-    'IsoForest': pickle.load(open('processed_data/models/iso_forest.pkl', 'rb')),
-    'Dummy': pickle.load(open('processed_data/models/dummy_model.pkl', 'rb'))
-}
+def main():
+    OUT.mkdir(parents=True, exist_ok=True)
+    x=np.load(DATA/'X_test_scaled.npy'); y=np.load(DATA/'y_test.npy')
+    rows=[]
+    for name,filename in [('LogReg L1','logreg_l1_cv.pkl'),
+        ('RF legacy first20','random_forest_top20.pkl'),
+        ('Isolation Forest','iso_forest.pkl'),('Dummy','dummy_model.pkl')]:
+        with open(DATA/'models'/filename,'rb') as f:
+            model=pickle.load(f)
+        inputs=x[:,:20] if name.startswith('RF') else x
+        raw=model.predict(inputs)
+        if name=='Isolation Forest':
+            pred=isolation_labels(raw); score=-model.decision_function(inputs)
+        else:
+            pred=raw; score=model.predict_proba(inputs)[:,list(model.classes_).index(0)]
+        rows.append(dict(model=name,**classification_metrics(y,pred,score)))
+        pd.DataFrame(dict(test_row=np.arange(len(y)),y_true=y,y_pred=pred,
+            patient_score=score)).to_csv(OUT/filename.replace('.pkl','_predictions.csv'),index=False)
+    with open(DATA/'models'/'autoencoder_model.pkl','rb') as f:
+        ae=pickle.load(f)
+    error=np.mean((x-ae.predict(x))**2,axis=1)
+    rows.append(dict(model='AE (uncalibrated)',roc_auc=roc_auc_score(y==0,error)))
+    pd.DataFrame(dict(test_row=np.arange(len(y)),y_true=y,patient_score=error)).to_csv(OUT/'ae_scores.csv',index=False)
+    result=pd.DataFrame(rows)
+    result.to_csv(OUT/'saved_model_metrics.csv',index=False)
+    print(result.round(4).to_string(index=False))
+    print('AUDIT ONLY: existing split; legacy RF inputs; AE threshold metrics withheld.')
 
-X_test_ab = np.load('processed_data/X_test_scaled.npy')
-y_test = np.load('processed_data/y_test.npy')
-top20 = pd.read_csv('results/tables/top20_ab_features.csv')
-X_test_top20 = X_test_ab[:, top20.index.values[:20]]
-
-name_map = {
-    'LogReg_L1': 'LogReg L1',
-    'RF_Top20': 'Random Forest',
-    'IsoForest': 'Isolation Forest',
-    'Dummy': 'Dummy'
-}
-results = []
-
-for name, model in models.items():
-    if name == 'RF_Top20':
-        y_pred = model.predict(X_test_top20)
-    else:
-        y_pred = model.predict(X_test_ab)
-
-    display_name = name_map[name]
-
-    f1_bad_only = manual_f1[display_name]
-    f1_weighted = round(f1_score(y_test, y_pred, average='weighted'), 3)
-    f1_macro = round(f1_score(y_test, y_pred, average='macro'), 3)
-
-    results.append([display_name, f1_bad_only, f1_weighted, f1_macro])
-
-results.append(['AutoEncoder', 0.83, 0.83, 0.83])
-
-
-df = pd.DataFrame(results, columns=['Model', 'F1 (only sick)', 'F1 weighted', 'F1 macro'])
-df = df.sort_values('F1 (only sick)', ascending=False).reset_index(drop=True)
-
-fig, ax = plt.subplots(figsize=(14, 4))
-ax.axis('off')
-
-table = ax.table(cellText=df.round(3).values,
-                 colLabels=df.columns,
-                 loc='center',
-                 cellLoc='center')
-
-table.auto_set_font_size(False)
-table.set_fontsize(11)
-table.scale(1.2, 2.0)
-for j in range(4):
-    table[(0, j)].set_facecolor('#1976D2')
-    table[(0, j)].set_text_props(weight='bold', color='white')
-
-for j in range(4):
-    table[(1, j)].set_facecolor('#C8E6C9')
-
-ax.set_title('F1-Score Evaluation by Models',
-             fontsize=14, fontweight='bold', pad=20)
-
-plt.tight_layout()
-plt.savefig('results/figures/10_f1_comparison.png', dpi=300, bbox_inches='tight')
-plt.show()
+if __name__=='__main__':
+    main()
