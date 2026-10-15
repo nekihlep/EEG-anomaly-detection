@@ -1,128 +1,133 @@
-> Work in progress: corrected experiments are in `08_random_forest.py`
-> (RF / L1 + RF) and `12_hybrid_comparison.py` (Keras AE + RF).
-> See `results/rf_regularized` and `results/hybrid_comparison` for exploratory
-> results and limitations. Older performance and biomarker claims below have
-> not been validated by these corrected experiments.
-
 ## 🧠 EEG-based Psychiatric Screening Pipeline
 
-**EEG-anomaly-detection** is a hybrid machine learning pipeline for automated screening of psychiatric disorders. The system combines unsupervised representation learning (Autoencoders) to extract latent features and ensemble learning (Random Forest) for high-accuracy pathology classification.
+**EEG-anomaly-detection** explores whether EEG spectral features can distinguish patients with psychiatric disorders from healthy controls.
 
-**Core Concept:**  
-*"Establish the neurological norm, compress high-dimensional brain activity into clinical signatures, and detect pathologies with world-class accuracy."*
+The project started with exploratory analysis and anomaly detection, then developed into a comparison of supervised classifiers and two hybrid approaches: **L1 feature selection + Random Forest** and **Autoencoder + Random Forest**.
+
+**Research question:**  
+Do feature selection and learned representations improve binary classification compared with individual classifiers and a Dummy baseline?
 
 ---
 
 ## ✨ Key Features
 
-- **Hybrid Architecture:** Integration of Unsupervised Anomaly Detection (Autoencoders) and Supervised Classification (Random Forest)  
-- **Representation Learning:** Extraction of 32 nonlinear features from the bottleneck layer of a neural network (TensorFlow/Keras)  
-- **Biomarker Discovery:** Identification of clinically relevant rhythms (Theta, Alpha) and brain regions (F3, Fz) using L1 regularization  
-- **High Performance:** Achieved F1-score of **0.934** on the test set  
-- **Advanced Visualization:** Interactive heatmaps of spectral deviations for 9+ diagnoses  
+- **Exploratory analysis:** Demographics, diagnostic-group composition and spectral patterns.
+- **Anomaly detection:** Initial experiments with Isolation Forest and a healthy-reference autoencoder.
+- **Feature selection:** Selection of 20 spectral features using L1-regularized logistic regression.
+- **Representation learning:** Compression of 114 spectral features into 32 latent features using an autoencoder.
+- **Model comparison:** Dummy, L1 logistic regression, Random Forest and two hybrid approaches.
+- **Screening evaluation:** Threshold selection prioritising patient detection, with separate calibration and test data.
 
 ---
 
 ## 📂 Data & Problem Setting
 
-- **Dataset:** [EEG Psychiatric Disorders Dataset](https://www.kaggle.com/datasets/shashwatwork/eeg-psychiatric-disorders-dataset) 
-- **Input:** 114 spectral features (absolute power across 6 frequency bands: Delta–Gamma)  
-- **Empirical Norm:** Constructed from healthy individuals aged 18–30 to detect pathological deviations  
-- **Classes:** Healthy Controls vs. Patients (Depression, Schizophrenia, AUD, OCD, etc.)  
+- **Dataset:** [EEG Psychiatric Disorders Dataset](https://www.kaggle.com/datasets/shashwatwork/eeg-psychiatric-disorders-dataset).
+- **Analysis sample:** 599 participants aged 18–30: 515 patients and 84 healthy controls.
+- **Input:** 114 absolute-power features across six frequency bands and 19 electrodes.
+- **Task:** Binary classification — patients versus healthy controls. Individual psychiatric diagnoses are not predicted.
+- **Labels:** `0` = patient, `1` = healthy control.
+
+The project uses extracted spectral features rather than raw EEG recordings.
 
 ---
 
-## 🧮 Machine Learning Pipeline (10 Stages)
+## 🧮 Methods
 
-The project represents a modular research workflow that transforms raw EEG data into interpretable clinical biomarkers:
+| Approach | Description |
+| --- | --- |
+| Dummy classifier | Always predicts the majority class: patients |
+| L1 logistic regression | Classification using standardized spectral features |
+| Random Forest | Classification using all 114 spectral features |
+| L1 + Random Forest | Classification using 20 features selected through L1 coefficients |
+| Autoencoder + Random Forest | Classification using 32 learned latent features |
 
-1. **Exploratory Data Analysis (01_eda.py)**  
-   Analysis of demographics and diagnosis distribution. Identified dominance of depression and schizophrenia cases  
+The hybrid approaches are evaluated separately. L1 selection and autoencoder representations are alternative ways of processing features before Random Forest classification.
 
-2. **Preprocessing (02_preprocessing.py)**  
-   Data cleaning and stratified 80/20 split  
-   StandardScaler used for neural network preparation  
+### Evaluation Protocol
 
-3. **Baseline Anomaly Detection (03_isolation_forest.py)**  
-   Isolation Forest as baseline anomaly detector (**F1 = 0.34**)  
-
-4. **Neural Anomaly Detection (04_autoencoder_anomaly.py)**  
-   Empirical norm built using MLP autoencoder trained on healthy subjects  
-   Detection based on reconstruction error  
-
-5. **Representation Learning (05_autoencoder_features.py)**  
-   Compression of 114 spectral features into 32 nonlinear latent features via bottleneck layer  
-
-6. **Biomarker Discovery (06_feature_importance.py)**  
-   Feature importance analysis revealed dominance of:  
-   - Theta rhythm (importance: 3.5)  
-   - Frontal electrodes F3 (13.8) and Fz (12.8)  
-
-7. **Logistic L1 Classification (07_logistic_l1.py)**  
-   Lasso-regularized classification for feature selection  
-   Achieved **F1 = 0.89** for patients  
-
-8. **Ensemble Classification (08_random_forest.py)**  
-   Random Forest trained on TOP-20 features using GridSearchCV  
-   Best result:  
-   - **F1-score = 0.934 (patients)**  
-   - **0.862 (weighted)**  
-
-9. **Baseline Comparison (09_baseline_comparison.py)**  
-   Comparative evaluation of all approaches  
-   Confirmed superiority of Random Forest over classical DL and anomaly detection  
-
-10. **Model Evaluation (10_model_evaluation.py)**  
-    Final evaluation including ROC/PR curves and normalized confusion matrices  
+- Five outer folds repeated twice, giving ten outer evaluations.
+- Identical spectral profiles kept together during splitting to prevent data leakage.
+- Approximately 60% fitting, 20% calibration and 20% testing in each evaluation.
+- Three-fold inner cross-validation for hyperparameter selection using balanced accuracy.
+- Scaling, feature selection and representation learning fitted within the training process.
+- Screening thresholds selected to maximise specificity while achieving sensitivity ≥ 0.90 on calibration data.
+- Thresholds applied unchanged to test data, where sensitivity may differ from the calibration target.
 
 ---
 
-## 📊 Key Insights & Results
+## 📊 Results
 
-- **SOTA Accuracy:** Random Forest significantly outperforms baseline models  
-  (Isolation Forest F1 = 0.34, Dummy F1 = 0.78)  
+**Test performance with calibration-selected screening thresholds:**
 
-- **Theta Dominance:**  
-  Most informative features are Theta rhythms in frontal regions (F3, Fz), consistent with clinical neuroscience findings  
+| Model | Sensitivity | Specificity | Balanced accuracy | ROC AUC |
+| --- | --- | --- | --- | --- |
+| Dummy classifier | 1.000 ± 0.000 | 0.000 ± 0.000 | 0.500 ± 0.000 | 0.500 ± 0.000 |
+| L1 logistic regression | 0.884 ± 0.043 | 0.203 ± 0.122 | 0.543 ± 0.068 | 0.658 ± 0.057 |
+| Random Forest | 0.890 ± 0.050 | 0.191 ± 0.128 | 0.541 ± 0.066 | 0.632 ± 0.058 |
+| L1 + Random Forest | 0.896 ± 0.049 | 0.208 ± 0.101 | 0.552 ± 0.030 | 0.637 ± 0.052 |
+| Autoencoder + Random Forest | 0.892 ± 0.055 | 0.201 ± 0.157 | 0.547 ± 0.062 | 0.620 ± 0.043 |
 
-- **Model Stability:**  
-  Learning curves show strong convergence with a Train–Validation gap of only **0.17**, indicating excellent generalization  
+Values are mean ± standard deviation across ten outer evaluations. As participants are reused across evaluations, these standard deviations describe variation across splits rather than confidence intervals.
+
+### Main Findings
+
+- Learned models correctly excluded approximately one fifth of healthy controls while detecting about nine tenths of patients.
+- **L1 + Random Forest** achieved the highest mean balanced accuracy at the calibrated thresholds.
+- **L1 logistic regression** achieved the highest mean ROC AUC.
+- Neither hybrid demonstrated a clear, reliable advantage over individual classifiers.
+- Dummy detected every patient but excluded no healthy controls, illustrating why patient F1 alone is insufficient for evaluating this imbalanced task.
+
+The models achieved partial discrimination, but the results do not establish practical screening usefulness. Selected features and latent representations have not been validated as clinical biomarkers.
+
+[Full results: standard and calibrated prediction](eeg_anomaly_detection/results/tables/final_metrics.md)
+
+![Model comparison](eeg_anomaly_detection/results/figures/final_tables.png)
+
+---
+
+## 🗂 Repository Structure
+
+- **`eeg_anomaly_detection/`** — analysis scripts, model comparisons and supporting Python modules.
+- **`initial_project_artifacts/`** — initial saved models, transformed features and data splits. These historical artifacts do not correspond to the latest evaluation results.
+- **`results/figures/`** — visualizations and the final comparison figure.
+- **`results/tables/`** — feature-analysis tables and final evaluation metrics.
+- **[paper1.pdf](paper1.pdf)** — exploratory analysis and initial anomaly-detection study.
+- **[paper2.pdf](paper2.pdf)** — supervised and hybrid classification study.
+
+The artifact and results directories are inside `eeg_anomaly_detection/`. Intermediate experiment outputs and caches are generated locally and excluded from Git.
 
 ---
 
 ## 🛠 Tech Stack
 
-- **Language:** Python 3.12+  
-- **Deep Learning:** Keras (Autoencoders)  
-- **Machine Learning:** Scikit-Learn (Random Forest, Logistic L1, Isolation Forest)  
-- **Analysis:** Pandas, NumPy, SciPy  
-- **Visualization:** Matplotlib, Seaborn (custom heatmaps)  
+- **Language:** Python
+- **Neural networks:** TensorFlow / Keras
+- **Machine learning:** scikit-learn
+- **Data analysis:** pandas, NumPy, SciPy
+- **Visualization:** Matplotlib, Seaborn
 
 ---
 
 ## ⚡️ Quick Start
 
 ```bash
-# Clone repository
 git clone https://github.com/nekihlep/EEG-anomaly-detection.git
-
-# Install dependencies
+cd EEG-anomaly-detection
 pip install -r requirements.txt
-
-# Run the complete pipeline
-python main.py
+python eeg_anomaly_detection/main.py screening
 ```
-Note: It is recommended to run the project in PyCharm for correct handling of data paths.
 
-## 🚀 Future Directions
+This runs the comparison of five approaches with screening-threshold calibration across ten outer folds. Completed folds are saved so interrupted runs can resume.
 
--**Connectivity Analysis:**
-Incorporating coherence (COH) features to model interactions between brain regions
+Generated results are saved in `eeg_anomaly_detection/results/screening_comparison/`.
 
+---
 
--**Graph Neural Networks (GNN):**
-Transition to graph-based models where EEG electrodes are nodes (relevant for EEML 2026)
+## 🚀 Future Directions & Limitations
 
+Further work will investigate coherence features and alternative representations, followed by validation on independent data.
 
--**Real-time Screening:**
-Development of a lightweight classifier for real-time clinical deployment
+Current limitations include a small healthy-control group, heterogeneous diagnoses, unadjusted medication and demographic effects, and evaluation on previously explored data.
+
+This is an exploratory research project. Model outputs are not psychiatric diagnoses and are not intended for clinical use.
