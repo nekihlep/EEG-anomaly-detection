@@ -1,3 +1,9 @@
+> Work in progress: corrected experiments are in `08_random_forest.py`
+> (RF / L1 + RF) and `12_hybrid_comparison.py` (Keras AE + RF).
+> See `results/rf_regularized` and `results/hybrid_comparison` for exploratory
+> results and limitations. Older performance and biomarker claims below have
+> not been validated by these corrected experiments.
+
 ## 🧠 EEG-based Psychiatric Screening Pipeline
 
 **EEG-anomaly-detection** is a hybrid machine learning pipeline for automated screening of psychiatric disorders. The system combines unsupervised representation learning (Autoencoders) to extract latent features and ensemble learning (Random Forest) for high-accuracy pathology classification.

@@ -1,0 +1,2 @@
+model,cv_balanced_accuracy,sensitivity,specificity,balanced_accuracy,f1_patient,f1_macro,f1_weighted,roc_auc,patient_as_patient,patient_as_healthy,healthy_as_patient,healthy_as_healthy
+AE32_RF,0.5635865897252909,0.9611650485436893,0.17647058823529413,0.5688178183894917,0.9166666666666666,0.5833333333333333,0.8222222222222222,0.6362078812107367,99,4,14,3
