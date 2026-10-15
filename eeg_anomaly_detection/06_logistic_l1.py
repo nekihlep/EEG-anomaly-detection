@@ -11,10 +11,10 @@ import warnings
 warnings.filterwarnings('ignore', category=FutureWarning)
 warnings.filterwarnings('ignore', category=UserWarning)
 
-X_train = np.load('processed_data/X_train_scaled.npy')
-X_test = np.load('processed_data/X_test_scaled.npy')
-y_train = np.load('processed_data/y_train.npy')
-y_test = np.load('processed_data/y_test.npy')
+X_train = np.load('initial_project_artifacts/X_train_scaled.npy')
+X_test = np.load('initial_project_artifacts/X_test_scaled.npy')
+y_train = np.load('initial_project_artifacts/y_train.npy')
+y_test = np.load('initial_project_artifacts/y_test.npy')
 
 logreg_l1_cv = LogisticRegressionCV(
     Cs=10,
@@ -54,9 +54,9 @@ plt.show()
 
 import pickle
 import os
-os.makedirs('processed_data/models', exist_ok=True)
-pickle.dump(logreg_l1_cv, open('processed_data/models/logreg_l1_cv.pkl', 'wb'))
-np.save('processed_data/models/logreg_coef.npy', logreg_l1_cv.coef_[0])
+os.makedirs('initial_project_artifacts/models', exist_ok=True)
+pickle.dump(logreg_l1_cv, open('initial_project_artifacts/models/logreg_l1_cv.pkl', 'wb'))
+np.save('initial_project_artifacts/models/logreg_coef.npy', logreg_l1_cv.coef_[0])
 
 
 

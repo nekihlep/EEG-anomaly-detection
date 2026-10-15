@@ -26,7 +26,7 @@ def main():
     y = (df['specific.disorder']=='Healthy control').astype(int)
     train, test = train_test_split(np.arange(len(y)),test_size=.2,stratify=y,random_state=42)
     # Same participants as the original preprocessing script.
-    assert np.array_equal(y.iloc[test],np.load(ROOT/'processed_data/y_test.npy'))
+    assert np.array_equal(y.iloc[test],np.load(ROOT/'initial_project_artifacts/y_test.npy'))
     out = ROOT/'results'/'rf_regularized'
     out.mkdir(parents=True,exist_ok=True)
     rows=[]
@@ -35,7 +35,7 @@ def main():
             scoring='recall_macro',max_iter=5000,random_state=42),
         threshold=-np.inf,max_features=20))]:
         pipeline=Pipeline([('scale',StandardScaler()),('select',selection),
-            ('rf',RandomForestClassifier(random_state=42,n_jobs=1,class_weight='balanced'))], memory=Memory(ROOT/'processed_data'/'cv_cache', verbose=0))
+            ('rf',RandomForestClassifier(random_state=42,n_jobs=1,class_weight='balanced'))], memory=Memory(ROOT/'initial_project_artifacts'/'cv_cache', verbose=0))
         search=GridSearchCV(pipeline,{'rf__n_estimators':[100,200],
             'rf__max_depth':[6,10,None],'rf__min_samples_split':[2,5]},
             cv=StratifiedKFold(5,shuffle=True,random_state=42),

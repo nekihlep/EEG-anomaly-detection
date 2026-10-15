@@ -124,7 +124,7 @@ def main():
         inner=list(StratifiedGroupKFold(3,shuffle=True,random_state=seed).split(x.iloc[train],y.iloc[train],groups[train]))
         for a,b in inner:
             assert not set(groups[train[a]]) & set(groups[train[b]])
-        cache=Memory(ROOT/'processed_data'/'screening_cache'/str(fold),verbose=0)
+        cache=Memory(ROOT/'initial_project_artifacts'/'screening_cache'/str(fold),verbose=0)
         rows=[];predictions=[];calibrations=[];details={};features=[]
         # Tune each complete pipeline using only the outer training partition.
         for name,estimator,grid in make_models(seed,cache):

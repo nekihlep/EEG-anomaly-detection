@@ -27,7 +27,7 @@ def main():
     out=ROOT/'results'/'hybrid_comparison';out.mkdir(parents=True,exist_ok=True)
     pipeline=Pipeline([('scale',StandardScaler()),('ae',AutoencoderFeatures()),
         ('rf',RandomForestClassifier(random_state=42,n_jobs=1,class_weight='balanced'))],
-        memory=Memory(ROOT/'processed_data'/'cv_cache',verbose=0))
+        memory=Memory(ROOT/'initial_project_artifacts'/'cv_cache',verbose=0))
     search=GridSearchCV(pipeline,{'rf__n_estimators':[100,200],
         'rf__max_depth':[6,10,None],'rf__min_samples_split':[2,5]},
         cv=StratifiedKFold(5,shuffle=True,random_state=42),

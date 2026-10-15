@@ -7,10 +7,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 warnings.filterwarnings('ignore')
-X_train = np.load('processed_data/X_train_scaled.npy')
-y_train = np.load('processed_data/y_train.npy')
-X_test  = np.load('processed_data/X_test_scaled.npy')
-y_test  = np.load('processed_data/y_test.npy')
+X_train = np.load('initial_project_artifacts/X_train_scaled.npy')
+y_train = np.load('initial_project_artifacts/y_train.npy')
+X_test  = np.load('initial_project_artifacts/X_test_scaled.npy')
+y_test  = np.load('initial_project_artifacts/y_test.npy')
 
 dummy = DummyClassifier(strategy='most_frequent')
 dummy.fit(X_train, y_train)
@@ -29,4 +29,4 @@ plt.ylabel('True')
 plt.xlabel('Predicted')
 plt.savefig('results/figures/dummyclass_cm.png', dpi=300)
 plt.show()
-pickle.dump(dummy, open('processed_data/models/dummy_model.pkl', 'wb'))
+pickle.dump(dummy, open('initial_project_artifacts/models/dummy_model.pkl', 'wb'))

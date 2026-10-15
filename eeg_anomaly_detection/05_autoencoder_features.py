@@ -7,7 +7,7 @@ import numpy as np
 from ae_transformer import AutoencoderFeatures
 
 ROOT=Path(__file__).resolve().parent
-DATA=ROOT/'processed_data'
+DATA=ROOT/'initial_project_artifacts'
 
 def main():
     train=np.load(DATA/'X_train_scaled.npy')
