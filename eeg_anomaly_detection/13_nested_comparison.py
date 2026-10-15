@@ -106,7 +106,7 @@ def main():
             if name=='L1_RF':
                 selected=model['select'];indices=np.flatnonzero(selected.get_support())
                 features=[dict(feature=names[i],l1_abs_coef=abs(selected.estimator_.coef_[0,i])) for i in indices]
-                details[name]['nonzero_selected']=sum(f['l1_abs_coef']>0 for f in features)
+                details[name]['nonzero_selected']=int(sum(f['l1_abs_coef']>0 for f in features))
             if name=='AE_RF':
                 details[name]['training_reconstruction_mse']=model['ae'].reconstruction_mse_
             print('  BA:',round(rows[-1]['balanced_accuracy'],3),flush=True)
