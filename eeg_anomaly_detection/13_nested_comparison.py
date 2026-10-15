@@ -55,6 +55,7 @@ def summarize():
     print(all_metrics.groupby('model')[METRICS].mean().round(4).to_string(),flush=True)
 
 def main():
+    import tensorflow as tf  # Fail early if the environment is incomplete.
     OUT.mkdir(parents=True,exist_ok=True)
     df=pd.read_csv(ROOT/'EEG_data.csv'); df=df[df.age.between(18,30)]
     names=[c for c in df if c.startswith('AB.')]
@@ -69,7 +70,7 @@ def main():
         ae=dict(hidden=[64,32,64],output='linear',epochs=50,batch_size=32),
         label_mapping={'patient':0,'healthy':1},
         dataset_sha256=hashlib.sha256((ROOT/'EEG_data.csv').read_bytes()).hexdigest(),
-        python=platform.python_version(),sklearn=sklearn.__version__)
+        python=platform.python_version(),sklearn=sklearn.__version__,tensorflow=tf.__version__)
     (OUT/'protocol.json').write_text(json.dumps(manifest,indent=2))
     (OUT/'splits.json').write_text(json.dumps([{'fold':i,'train_rows':df.index[tr].tolist(),'test_rows':df.index[te].tolist()} for i,(tr,te) in enumerate(splits)],indent=2))
     for fold,(train,test) in enumerate(splits):
