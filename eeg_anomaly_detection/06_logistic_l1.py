@@ -37,8 +37,8 @@ print("Active features:", np.sum(logreg_l1_cv.coef_ != 0))
 plt.figure(figsize=(10,6))
 importance = np.abs(logreg_l1_cv.coef_[0])
 plt.bar(range(len(importance)), importance)
-plt.title(f'L1 Importance (active: {np.sum(importance>0)}/32 features)')
-plt.xlabel('AE Feature Index')
+plt.title(f'L1 Importance (active: {np.sum(importance>0)}/114 features)')
+plt.xlabel('Spectral Feature Index')
 plt.savefig('results/figures/logreg_l1_importance.png', dpi=300)
 plt.show()
 
@@ -48,7 +48,7 @@ cm = confusion_matrix(y_test, y_pred)
 sns.heatmap(cm, annot=True, fmt='d', cmap='Reds',
             xticklabels=['Patient', 'Healthy'],
             yticklabels=['Patient', 'Healthy'])
-plt.title('Logistic L1 (F1-optimal)')
+plt.title('Logistic L1 (macro-recall tuning)')
 plt.savefig('results/figures/logreg_l1_cm.png', dpi=300)
 plt.show()
 

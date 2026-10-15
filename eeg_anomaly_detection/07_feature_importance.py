@@ -4,21 +4,16 @@ import matplotlib.pyplot as plt
 import os
 import seaborn as sns
 
-electrodes = ['FP1','FP2','F7','F3','Fz','F4','F8','T3','C3','Cz','C4','T4','T5','P3','Pz','P4','T6','O1','O2',
-              'FPz','AF3','AF4','F5','F1','F2','F6','T7','T8']
-
-coef = np.load('processed_data/models/logreg_coef.npy')
-
-features_real = []
-for rhythm, start in zip(['Delta','Theta','Alpha','Beta','HighBeta','Gamma'], [0,28,56,84,112,140]):
-    for i, elec in enumerate(electrodes):
-        if start+i < 114:
-            features_real.append(f"{rhythm}.{elec}")
+from pathlib import Path
+ROOT = Path(__file__).resolve().parent
+features_real = [c for c in pd.read_csv(ROOT / 'EEG_data.csv', nrows=0).columns if c.startswith('AB.')]
+coef = np.load(ROOT / 'processed_data/models/logreg_coef.npy')
+assert len(features_real) == len(coef)
 
 df_features = pd.DataFrame({
     'feature': features_real[:114],
     'importance': np.abs(coef),
-    'rhythm': [f.split('.')[0] for f in features_real[:114]],
+    'rhythm': [f.split('.')[2].capitalize() for f in features_real],
     'electrode': [f.split('.')[-1] for f in features_real[:114]]
 })
 
