@@ -13,7 +13,7 @@ y_test = np.load('processed_data/y_test.npy')
 
 # Healthy -- train
 X_healthy_train = X_train[y_train == 1]
-print(f"Healthy train: {X_healthy_train.shape[0]} из {X_train.shape[0]}")
+print(f"Healthy train: {X_healthy_train.shape[0]} out of {X_train.shape[0]}")
 
 #  Isolation Forest fits on healthy
 iso_forest = IsolationForest(

@@ -7,3 +7,4 @@ eeg_anomaly_detection/processed_data/cv_cache/
 eeg_anomaly_detection/results/rf_regularized/*_pipeline.pkl
 eeg_anomaly_detection/results/hybrid_comparison/pipeline.pkl
 eeg_anomaly_detection/processed_data/nested_cache/
+eeg_anomaly_detection/processed_data/screening_cache/

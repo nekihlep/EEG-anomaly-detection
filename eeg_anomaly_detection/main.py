@@ -9,6 +9,7 @@ SCRIPTS={
     'rf':'08_random_forest.py',
     'hybrid':'12_hybrid_comparison.py',
     'compare':'13_nested_comparison.py',
+    'screening':'15_screening_comparison.py',
 }
 
 def main():

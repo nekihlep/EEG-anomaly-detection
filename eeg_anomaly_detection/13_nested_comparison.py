@@ -44,7 +44,28 @@ def summarize():
     frames=list(OUT.glob('fold_*_metrics.csv'))
     all_metrics=pd.concat([pd.read_csv(p) for p in frames],ignore_index=True)
     all_metrics.to_csv(OUT/'fold_metrics.csv',index=False)
-    all_metrics.groupby('model')[METRICS].agg(['mean','std']).to_csv(OUT/'summary.csv')
+    grouped=all_metrics.groupby('model')[METRICS].agg(['mean','std'])
+    grouped.to_csv(OUT/'summary.csv')
+    labels={'Dummy':'Dummy classifier','L1':'L1 logistic regression','RF':'Random Forest',
+            'L1_RF':'L1 selection + Random Forest','AE_RF':'Autoencoder + Random Forest'}
+    headings={'sensitivity':'Sensitivity','specificity':'Specificity',
+              'balanced_accuracy':'Balanced accuracy','f1_patient':'Patient F1',
+              'f1_macro':'Macro F1','f1_weighted':'Weighted F1','roc_auc':'ROC AUC'}
+    table=[]
+    for name in ['Dummy','L1','RF','L1_RF','AE_RF']:
+        row={'Model':labels[name]}
+        for metric in METRICS:
+            row[headings[metric]]=f"{grouped.loc[name,(metric,'mean')]:.3f} ± {grouped.loc[name,(metric,'std')]:.3f}"
+        table.append(row)
+    display=pd.DataFrame(table)
+    display.to_csv(OUT/'final_metrics.csv',index=False)
+    markdown=['# Final model comparison','',
+              'Mean ± standard deviation across ten outer folds (five folds, two repeats).',
+              'Standard deviations describe variability across dependent folds; they are not confidence intervals.','',
+              '| '+' | '.join(display.columns)+' |',
+              '| '+' | '.join(['---']*len(display.columns))+' |']
+    markdown.extend('| '+' | '.join(row)+' |' for row in display.itertuples(index=False,name=None))
+    (OUT/'final_metrics.md').write_text('\n'.join(markdown)+'\n')
     pred=pd.concat([pd.read_csv(p) for p in OUT.glob('fold_*_predictions.csv')],ignore_index=True)
     pred.to_csv(OUT/'predictions.csv',index=False)
     # Within-repeat OOF: one prediction per participant, not independent cohorts.
@@ -75,6 +96,7 @@ def main():
         raise ValueError('Fold indices must be 0..9')
     import tensorflow as tf  # Fail early if the environment is incomplete.
     OUT.mkdir(parents=True,exist_ok=True)
+    # Keep identical spectral profiles together in every split.
     df=pd.read_csv(ROOT/'EEG_data.csv'); df=df[df.age.between(18,30)]
     names=[c for c in df if c.startswith('AB.')]
     x=df[names]; y=(df['specific.disorder']=='Healthy control').astype(int)
@@ -105,6 +127,7 @@ def main():
             assert not set(groups[train[a]]) & set(groups[train[b]])
         cache=Memory(ROOT/'processed_data'/'nested_cache'/str(fold),verbose=0)
         rows=[];predictions=[];details={};features=[]
+        # Tune each complete pipeline using only the outer training partition.
         for name,estimator,grid in make_models(seed,cache):
             print(f'Fold {fold+1}/10: {name}',flush=True)
             with warnings.catch_warnings(record=True) as caught:
@@ -130,6 +153,7 @@ def main():
             if name=='AE_RF':
                 details[name]['training_reconstruction_mse']=model['ae'].reconstruction_mse_
             print('  BA:',round(rows[-1]['balanced_accuracy'],3),flush=True)
+        # Save each completed fold so interrupted runs can resume.
         pd.concat(predictions).to_csv(OUT/f'fold_{fold:02d}_predictions.csv',index=False)
         (OUT/f'fold_{fold:02d}_params.json').write_text(json.dumps(details,indent=2))
         pd.DataFrame(features).to_csv(OUT/f'fold_{fold:02d}_features.csv',index=False)
