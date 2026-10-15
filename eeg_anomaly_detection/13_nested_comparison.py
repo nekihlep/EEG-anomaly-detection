@@ -7,7 +7,7 @@ os.environ.setdefault('TF_CPP_MIN_LOG_LEVEL','3')
 os.environ.setdefault('TF_NUM_INTRAOP_THREADS','1')
 os.environ.setdefault('TF_NUM_INTEROP_THREADS','1')
 from pathlib import Path
-import json, hashlib, warnings, platform
+import json, hashlib, warnings, platform, argparse
 import numpy as np
 import pandas as pd
 import sklearn
@@ -67,6 +67,12 @@ def summarize():
     print(all_metrics.groupby('model')[METRICS].mean().round(4).to_string(),flush=True)
 
 def main():
+    parser=argparse.ArgumentParser()
+    parser.add_argument('--folds', default=None, help='Comma-separated outer fold indices, 0..9')
+    args=parser.parse_args()
+    requested=set(range(10)) if args.folds is None else {int(v) for v in args.folds.split(',')}
+    if not requested <= set(range(10)):
+        raise ValueError('Fold indices must be 0..9')
     import tensorflow as tf  # Fail early if the environment is incomplete.
     OUT.mkdir(parents=True,exist_ok=True)
     df=pd.read_csv(ROOT/'EEG_data.csv'); df=df[df.age.between(18,30)]
@@ -86,6 +92,8 @@ def main():
     (OUT/'protocol.json').write_text(json.dumps(manifest,indent=2))
     (OUT/'splits.json').write_text(json.dumps([{'fold':i,'train_rows':df.index[tr].tolist(),'test_rows':df.index[te].tolist()} for i,(tr,te) in enumerate(splits)],indent=2))
     for fold,(train,test) in enumerate(splits):
+        if fold not in requested:
+            continue
         metrics_path=OUT/f'fold_{fold:02d}_metrics.csv'
         if metrics_path.exists():
             print('Already complete:',fold,flush=True); continue
@@ -127,6 +135,8 @@ def main():
         pd.DataFrame(features).to_csv(OUT/f'fold_{fold:02d}_features.csv',index=False)
         pd.DataFrame(rows).to_csv(metrics_path,index=False)
         cache.clear(warn=False)
-    summarize()
+    print('Requested folds complete',flush=True)
+    if args.folds is None:
+        summarize()
 
 if __name__=='__main__':main()
