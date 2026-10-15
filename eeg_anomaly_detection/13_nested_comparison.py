@@ -18,7 +18,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.feature_selection import SelectFromModel
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import RepeatedStratifiedKFold, StratifiedKFold, GridSearchCV
+from sklearn.model_selection import StratifiedGroupKFold, GridSearchCV
 from sklearn.exceptions import ConvergenceWarning
 from evaluation import classification_metrics
 from ae_transformer import AutoencoderFeatures
@@ -60,8 +60,11 @@ def main():
     names=[c for c in df if c.startswith('AB.')]
     x=df[names]; y=(df['specific.disorder']=='Healthy control').astype(int)
     assert len(names)==114 and not x.isna().any().any()
-    splits=list(RepeatedStratifiedKFold(n_splits=5,n_repeats=2,random_state=2026).split(x,y))
-    manifest=dict(outer_folds=5,repeats=2,inner_folds=3,outer_seed=2026,
+    groups=pd.util.hash_pandas_object(x,index=False).to_numpy()
+    splits=[]
+    for repeat in range(2):
+        splits.extend(StratifiedGroupKFold(5,shuffle=True,random_state=2026+repeat).split(x,y,groups))
+    manifest=dict(outer_folds=5,repeats=2,inner_folds=3,outer_seed=2026,grouping='identical 114 AB values',
         C_values=C_VALUES,rf_grid=RF_GRID,selection_score='balanced_accuracy',
         ae=dict(hidden=[64,32,64],output='linear',epochs=50,batch_size=32),
         label_mapping={'patient':0,'healthy':1},
@@ -75,7 +78,10 @@ def main():
             print('Already complete:',fold,flush=True); continue
         assert not set(train)&set(test)
         seed=2026+fold
-        inner=list(StratifiedKFold(3,shuffle=True,random_state=seed).split(x.iloc[train],y.iloc[train]))
+        assert not set(groups[train]) & set(groups[test])
+        inner=list(StratifiedGroupKFold(3,shuffle=True,random_state=seed).split(x.iloc[train],y.iloc[train],groups[train]))
+        for a,b in inner:
+            assert not set(groups[train[a]]) & set(groups[train[b]])
         cache=Memory(ROOT/'processed_data'/'nested_cache'/str(fold),verbose=0)
         rows=[];predictions=[];details={};features=[]
         for name,estimator,grid in make_models(seed,cache):
