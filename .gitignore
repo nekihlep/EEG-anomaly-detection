@@ -4,3 +4,5 @@ __pycache__/
 results/rf_comparison/*_pipeline.pkl
 eeg_anomaly_detection/results/rf_comparison/*_pipeline.pkl
 eeg_anomaly_detection/processed_data/cv_cache/
+eeg_anomaly_detection/results/rf_regularized/*_pipeline.pkl
+eeg_anomaly_detection/results/hybrid_comparison/pipeline.pkl

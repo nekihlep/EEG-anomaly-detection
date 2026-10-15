@@ -27,11 +27,11 @@ def main():
     train, test = train_test_split(np.arange(len(y)),test_size=.2,stratify=y,random_state=42)
     # Same participants as the original preprocessing script.
     assert np.array_equal(y.iloc[test],np.load(ROOT/'processed_data/y_test.npy'))
-    out = ROOT/'results'/'rf_comparison'
+    out = ROOT/'results'/'rf_regularized'
     out.mkdir(parents=True,exist_ok=True)
     rows=[]
     for label,selection in [('all114','passthrough'),('l1_top20',SelectFromModel(
-        LogisticRegressionCV(Cs=10,penalty='l1',solver='liblinear',cv=5,
+        LogisticRegressionCV(Cs=[0.01, 0.1, 1, 10, 100],penalty='l1',solver='liblinear',cv=5,
             scoring='recall_macro',max_iter=5000,random_state=42),
         threshold=-np.inf,max_features=20))]:
         pipeline=Pipeline([('scale',StandardScaler()),('select',selection),
@@ -52,6 +52,8 @@ def main():
         table['rhythm']=table.feature.str.split('.').str[2]
         table['electrode']=table.feature.str.split('.').str[-1]
         if label=='l1_top20':
+            est = best['select'].estimator_
+            pd.DataFrame({'C': est.Cs_, 'max_iterations': est.n_iter_.max(axis=(0,1))}).to_csv(out/'l1_convergence.csv', index=False)
             table['l1_abs_coef']=np.abs(best['select'].estimator_.coef_[0])[chosen]
         table.to_csv(out/f'{label}_features.csv',index=False)
         pd.DataFrame(dict(dataset_row=df.index[test],y_true=y.iloc[test].to_numpy(),
