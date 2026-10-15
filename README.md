@@ -80,9 +80,7 @@ Values are mean ± standard deviation across ten outer evaluations. As participa
 
 The models achieved partial discrimination, but the results do not establish practical screening usefulness. Selected features and latent representations have not been validated as clinical biomarkers.
 
-[Full results: standard and calibrated prediction](eeg_anomaly_detection/results/tables/final_metrics.md)
-
-![Model comparison](eeg_anomaly_detection/results/figures/final_tables.png)
+-**[Full results: standard and calibrated prediction](eeg_anomaly_detection/results/tables/final_metrics.md)**
 
 ---
 
