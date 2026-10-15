@@ -13,7 +13,7 @@ y_test = np.load('processed_data/y_test.npy')
 
 # Healthy -- train
 X_healthy_train = X_train[y_train == 1]
-print(f"Healthy train: {X_healthy_train.shape[0]} из {X_train.shape[0]}")
+print(f"Healthy train: {X_healthy_train.shape[0]} out of {X_train.shape[0]}")
 
 #  Isolation Forest fits on healthy
 iso_forest = IsolationForest(
@@ -24,7 +24,8 @@ iso_forest = IsolationForest(
 iso_forest.fit(X_healthy_train)
 
 predictions_test = iso_forest.predict(X_test)
-y_pred_binary = (predictions_test == -1).astype(int)
+from evaluation import isolation_labels
+y_pred_binary = isolation_labels(predictions_test)
 # Confusion Matrix
 cm = confusion_matrix(y_test, y_pred_binary)
 sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',

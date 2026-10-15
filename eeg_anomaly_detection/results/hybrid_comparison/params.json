@@ -1,0 +1,5 @@
+{
+  "rf__max_depth": 6,
+  "rf__min_samples_split": 5,
+  "rf__n_estimators": 200
+}

@@ -64,12 +64,8 @@ print("Test balance: ", np.bincount(y_test) / len(y_test))
 
 # 7. EEG band correlation matrix
 print("\nCorrelations between EEG bands (sum across channels):")
-bands = {
-    'Delta': features_ab[:18],
-    'Theta': features_ab[18:36],
-    'Alpha': features_ab[36:54],
-    'Beta': features_ab[54:72]
-}
+bands = {band: [c for c in features_ab if c.split('.')[2] == band]
+         for band in dict.fromkeys(c.split('.')[2] for c in features_ab)}
 
 df_bands = pd.DataFrame()
 for name, cols in bands.items():
