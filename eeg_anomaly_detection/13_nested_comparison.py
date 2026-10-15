@@ -52,6 +52,18 @@ def summarize():
     for (repeat,model),g in pred.groupby(['repeat','model']):
         pooled.append(dict(repeat=repeat,model=model,**classification_metrics(g.y_true,g.y_pred,g.patient_score)))
     pd.DataFrame(pooled).to_csv(OUT/'oof_metrics.csv',index=False)
+    differences=[]
+    for metric in METRICS:
+        wide=all_metrics.pivot(index='fold',columns='model',values=metric)
+        for model in ['L1_RF','AE_RF']:
+            delta=wide[model]-wide['RF']
+            differences.append(dict(model=model,reference='RF',metric=metric,
+                mean_difference=delta.mean(),sd_difference=delta.std(),
+                folds_better=int((delta>0).sum()),folds_total=len(delta)))
+    pd.DataFrame(differences).to_csv(OUT/'paired_differences.csv',index=False)
+    selected=pd.concat([pd.read_csv(p).assign(fold=p.stem) for p in OUT.glob('fold_*_features.csv')])
+    selected.groupby('feature').agg(selected_folds=('fold','nunique'),
+        mean_abs_coef=('l1_abs_coef','mean')).sort_values('selected_folds',ascending=False).to_csv(OUT/'selection_frequency.csv')
     print(all_metrics.groupby('model')[METRICS].mean().round(4).to_string(),flush=True)
 
 def main():
