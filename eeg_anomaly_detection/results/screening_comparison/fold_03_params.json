@@ -1,0 +1,107 @@
+{
+  "Dummy": {
+    "threshold": 1.0,
+    "calibration_metrics": {
+      "sensitivity": 1.0,
+      "specificity": 0.0,
+      "balanced_accuracy": 0.5,
+      "f1_patient": 0.9237668161434978,
+      "f1_macro": 0.4618834080717489,
+      "f1_weighted": 0.7928998505231689,
+      "roc_auc": 0.5,
+      "patient_as_patient": 103,
+      "patient_as_healthy": 0,
+      "healthy_as_patient": 17,
+      "healthy_as_healthy": 0
+    }
+  },
+  "L1": {
+    "best_params": {
+      "l1__C": 10
+    },
+    "inner_score": 0.546965378757926,
+    "threshold": 0.4614753905233093,
+    "calibration_metrics": {
+      "sensitivity": 0.9029126213592233,
+      "specificity": 0.23529411764705882,
+      "balanced_accuracy": 0.5691033695031411,
+      "f1_patient": 0.8899521531100478,
+      "f1_macro": 0.57400833461954,
+      "f1_weighted": 0.8004347378710707,
+      "roc_auc": 0.7001713306681896,
+      "patient_as_patient": 93,
+      "patient_as_healthy": 10,
+      "healthy_as_patient": 13,
+      "healthy_as_healthy": 4
+    }
+  },
+  "RF": {
+    "best_params": {
+      "rf__max_depth": 6,
+      "rf__min_samples_leaf": 3,
+      "rf__n_estimators": 200
+    },
+    "inner_score": 0.5181938159879337,
+    "threshold": 0.5518994461118352,
+    "calibration_metrics": {
+      "sensitivity": 0.9029126213592233,
+      "specificity": 0.11764705882352941,
+      "balanced_accuracy": 0.5102798400913764,
+      "f1_patient": 0.8815165876777251,
+      "f1_macro": 0.5097238110802419,
+      "f1_weighted": 0.7761753009751048,
+      "roc_auc": 0.6659051970302684,
+      "patient_as_patient": 93,
+      "patient_as_healthy": 10,
+      "healthy_as_patient": 15,
+      "healthy_as_healthy": 2
+    }
+  },
+  "L1_RF": {
+    "best_params": {
+      "rf__max_depth": 6,
+      "rf__min_samples_leaf": 1,
+      "rf__n_estimators": 200,
+      "select__estimator__C": 1
+    },
+    "inner_score": 0.5126489075839448,
+    "threshold": 0.5340290902252705,
+    "calibration_metrics": {
+      "sensitivity": 0.9029126213592233,
+      "specificity": 0.17647058823529413,
+      "balanced_accuracy": 0.5396916047972588,
+      "f1_patient": 0.8857142857142857,
+      "f1_macro": 0.5428571428571428,
+      "f1_weighted": 0.7885714285714286,
+      "roc_auc": 0.6236436322101656,
+      "patient_as_patient": 93,
+      "patient_as_healthy": 10,
+      "healthy_as_patient": 14,
+      "healthy_as_healthy": 3
+    },
+    "nonzero_selected": 20
+  },
+  "AE_RF": {
+    "best_params": {
+      "rf__max_depth": 6,
+      "rf__min_samples_leaf": 1,
+      "rf__n_estimators": 200
+    },
+    "inner_score": 0.5019329613847032,
+    "threshold": 0.5422398918290643,
+    "calibration_metrics": {
+      "sensitivity": 0.9029126213592233,
+      "specificity": 0.17647058823529413,
+      "balanced_accuracy": 0.5396916047972588,
+      "f1_patient": 0.8857142857142857,
+      "f1_macro": 0.5428571428571428,
+      "f1_weighted": 0.7885714285714286,
+      "roc_auc": 0.6059394631639063,
+      "patient_as_patient": 93,
+      "patient_as_healthy": 10,
+      "healthy_as_patient": 14,
+      "healthy_as_healthy": 3
+    },
+    "training_reconstruction_mse": 0.11121723800897598
+  }
+}

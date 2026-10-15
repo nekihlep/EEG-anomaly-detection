@@ -1,0 +1,36 @@
+{
+  "Dummy": {},
+  "L1": {
+    "best_params": {
+      "l1__C": 10
+    },
+    "inner_score": 0.5231960993623958
+  },
+  "RF": {
+    "best_params": {
+      "rf__max_depth": 6,
+      "rf__min_samples_leaf": 3,
+      "rf__n_estimators": 200
+    },
+    "inner_score": 0.5831746535491378
+  },
+  "L1_RF": {
+    "best_params": {
+      "rf__max_depth": 6,
+      "rf__min_samples_leaf": 1,
+      "rf__n_estimators": 200,
+      "select__estimator__C": 10
+    },
+    "inner_score": 0.563201036066793,
+    "nonzero_selected": 20
+  },
+  "AE_RF": {
+    "best_params": {
+      "rf__max_depth": 6,
+      "rf__min_samples_leaf": 3,
+      "rf__n_estimators": 200
+    },
+    "inner_score": 0.5356516610086904,
+    "training_reconstruction_mse": 0.09565217047929764
+  }
+}
