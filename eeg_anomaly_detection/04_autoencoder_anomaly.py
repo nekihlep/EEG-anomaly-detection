@@ -6,10 +6,10 @@ from sklearn.metrics import (precision_score, recall_score, f1_score,
 import seaborn as sns
 import pickle
 # Load
-X_train = np.load('processed_data/X_train_scaled.npy')
-X_test = np.load('processed_data/X_test_scaled.npy')
-y_train = np.load('processed_data/y_train.npy')
-y_test = np.load('processed_data/y_test.npy')
+X_train = np.load('initial_project_artifacts/X_train_scaled.npy')
+X_test = np.load('initial_project_artifacts/X_test_scaled.npy')
+y_train = np.load('initial_project_artifacts/y_train.npy')
+y_test = np.load('initial_project_artifacts/y_test.npy')
 
 # Healthy --- train
 X_healthy_train = X_train[y_train == 1]
@@ -42,4 +42,4 @@ plt.ylabel('True')
 plt.xlabel('Predicted')
 plt.savefig('results/figures/autoencoder_cm.png', dpi=300)
 plt.show()
-pickle.dump(autoencoder, open('processed_data/models/autoencoder_model.pkl', 'wb'))
+pickle.dump(autoencoder, open('initial_project_artifacts/models/autoencoder_model.pkl', 'wb'))

@@ -9,7 +9,7 @@ import pandas as pd
 from sklearn.metrics import roc_auc_score
 from evaluation import classification_metrics, isolation_labels
 ROOT = Path(__file__).resolve().parent
-DATA = ROOT/'processed_data'
+DATA = ROOT/'initial_project_artifacts'
 OUT = ROOT/'results'/'audit'
 
 def main():

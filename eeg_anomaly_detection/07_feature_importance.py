@@ -7,7 +7,7 @@ import seaborn as sns
 from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 features_real = [c for c in pd.read_csv(ROOT / 'EEG_data.csv', nrows=0).columns if c.startswith('AB.')]
-coef = np.load(ROOT / 'processed_data/models/logreg_coef.npy')
+coef = np.load(ROOT / 'initial_project_artifacts/models/logreg_coef.npy')
 assert len(features_real) == len(coef)
 
 df_features = pd.DataFrame({

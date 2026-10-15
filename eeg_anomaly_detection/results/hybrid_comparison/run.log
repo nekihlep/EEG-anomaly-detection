@@ -1,6 +1,0 @@
-WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
-I0000 00:00:1791972922.389789       7 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
-WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
-I0000 00:00:1791972923.513366       7 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
-Fitting 5 folds for each of 12 candidates, totalling 60 fits
-{'model': 'AE32_RF', 'cv_balanced_accuracy': np.float64(0.5635865897252909), 'sensitivity': np.float64(0.9611650485436893), 'specificity': np.float64(0.17647058823529413), 'balanced_accuracy': np.float64(0.5688178183894917), 'f1_patient': 0.9166666666666666, 'f1_macro': 0.5833333333333333, 'f1_weighted': 0.8222222222222222, 'roc_auc': 0.6362078812107367, 'patient_as_patient': 99, 'patient_as_healthy': 4, 'healthy_as_patient': 14, 'healthy_as_healthy': 3}
